@@ -1,0 +1,29 @@
+@t.runtime_checkable
+class HasOutlineColor(t.Protocol):
+    @property
+    def outline_color(self) -> str:
+        raise NotImplementedError
+
+    @outline_color.setter
+    def outline_color(self, value: str):
+        raise NotImplementedError
+
+@t.runtime_checkable
+class HasOutlineSize(t.Protocol):
+    @property
+    def outline_size(self) -> int:
+        raise NotImplementedError
+
+    @outline_size.setter
+    def outline_size(self, value: int):
+        raise NotImplementedError
+
+@t.runtime_checkable
+class HasFilling(t.Protocol):
+    @property
+    def filling(self) -> str:
+        raise NotImplementedError
+
+    @filling.setter
+    def filling(self, value: str):
+        raise NotImplementedError

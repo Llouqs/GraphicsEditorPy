@@ -12,9 +12,9 @@ class Line(GrafObject.Figure):
     Класс фигуры - Линия
     """
 
-    def __init__(self, frame, props):
-        super().__init__(frame, props)
-        self.outline_color: str = "#000000"
+    def __init__(self, frame, pen_color, pen_width, brush_prop):
+        super().__init__(frame, pen_color, pen_width, brush_prop)
+
 
     def draw_geometry(self, painter):
         """
@@ -54,8 +54,8 @@ class Rectangle(GrafObject.Figure):
     Класс фигуры - Прямоугольник
     """
 
-    def __init__(self, frame, props):
-        super().__init__(frame, props)
+    def __init__(self, frame, pen_color, pen_width, brush_prop):
+        super().__init__(frame, pen_color, pen_width, brush_prop)
 
     def draw_geometry(self, painter):
         """
@@ -94,8 +94,8 @@ class Ellipse(GrafObject.Figure):
     Класс фигуры - Эллипс
     """
 
-    def __init__(self, frame, props):
-        super().__init__(frame, props)
+    def __init__(self, frame, pen_color, pen_width, brush_prop):
+        super().__init__(frame, pen_color, pen_width, brush_prop)
 
     def draw_geometry(self, painter):
         """

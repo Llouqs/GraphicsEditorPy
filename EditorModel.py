@@ -4,7 +4,6 @@ from Frame import Frame
 from GrafObject import GrafObject, Group
 from Painter import Painter
 from Figures import Line, Rectangle, Ellipse
-from Properties import Properties, BrushProps, PenColor, PenWidth
 from Painter import Painter
 import copy
 
@@ -96,9 +95,7 @@ class EditorModel:
         """
         self.object_factory.set_pen_color(pen_color)
         if self.curr_object is not None:
-            prop = Properties()
-            prop.prop_group.list_prop.append(self.object_factory.pen_color)
-            self.curr_object.change_properties(prop)
+            self.curr_object.pen_color = pen_color
             self.repaint()
 
     def set_pen_width(self, pen_width):
@@ -108,9 +105,7 @@ class EditorModel:
         """
         self.object_factory.set_pen_width(pen_width)
         if self.curr_object is not None:
-            prop = Properties()
-            prop.prop_group.list_prop.append(self.object_factory.pen_width)
-            self.curr_object.change_properties(prop)
+            self.curr_object.pen_width = pen_width
             self.repaint()
 
     def set_brush_prop(self, brush_prop):
@@ -121,9 +116,7 @@ class EditorModel:
         """
         self.object_factory.set_brush_prop(brush_prop)
         if self.curr_object is not None:
-            prop = Properties()
-            prop.prop_group.list_prop.append(self.object_factory.brush_prop)
-            self.curr_object.change_properties(prop)
+            self.curr_object.brush_color = brush_prop
             self.repaint()
 
     def set_object_type(self, object):
@@ -196,9 +189,9 @@ class ObjectFactory:
 
     def __init__(self, store):
         self.object_type = None
-        self.pen_width = PenWidth(3)
-        self.pen_color = PenColor(QtGui.QColor("black"))
-        self.brush_prop = BrushProps(QtGui.QColor("black"))
+        self.pen_width = 3
+        self.pen_color =QtGui.QColor("black")
+        self.brush_prop = QtGui.QColor("black")
         self.store = store
 
     def set_pen_width(self, pen_width):
@@ -206,21 +199,21 @@ class ObjectFactory:
         Установка свойств ручки
         :param pen_width: толщина ручки
         """
-        self.pen_width = PenWidth(pen_width)
+        self.pen_width = pen_width
 
     def set_pen_color(self, pen_color):
         """
         Установка свойств ручки
         :param pen_color: цвет ручки
         """
-        self.pen_color = PenColor(pen_color)
+        self.pen_color = pen_color
 
     def set_brush_prop(self, brush_prop):
         """
         Установка свойств ручки
         :param brush_prop: заливка
         """
-        self.brush_prop = BrushProps(brush_prop)
+        self.brush_prop = brush_prop
 
     def set_object_type(self, object):
         """
@@ -236,21 +229,17 @@ class ObjectFactory:
         :param y: координата y
         """
         frame = Frame(x, y, x, y)
-        prop = Properties()
-        prop.prop_group.list_prop.append(self.pen_color)
-        prop.prop_group.list_prop.append(self.pen_width)
-        prop.prop_group.list_prop.append(self.brush_prop)
 
         if self.object_type == "rect":
-            rect = Rectangle(frame, prop)
+            rect = Rectangle(frame, self.pen_width, self.pen_color, self.brush_prop)
             self.store.add(rect)
 
         elif self.object_type == "ellipse":
-            ellipse = Ellipse(frame, prop)
+            ellipse = Ellipse(frame, self.pen_width, self.pen_color, self.brush_prop)
             self.store.add(ellipse)
 
         elif self.object_type == "line":
-            line = Line(frame, prop)
+            line = Line(frame,  self.pen_width, self.pen_color,  self.brush_prop)
             self.store.add(line)
 
 

@@ -36,35 +36,8 @@ class OurFactory:
 
 class SampleFigureInstance(Figure):
 
-    def __init__(self, frame, props: Properties):
-        super().__init__(frame)
-        self.prop = props
-
-    def change_properties(self, props):
-        self.prop = props
-
-    def draw(self, painter):
-        """
-        Метод отрисовки фигур
-        :param painter: средство рисования
-        """
-        self.prop.apply_props(painter)
-        self.draw_geometry(painter)
-
-    def move(self, x, y):
-        self.frame.move(x, y)
-
-    def move_first_marker(self, x, y):
-        self.frame.move_first_marker(x, y)
-
-    def move_second_marker(self, x, y):
-        self.frame.move_second_marker(x, y)
-
-    def move_third_marker(self, x, y):
-        self.frame.move_third_marker(x, y)
-
-    def move_fourth_marker(self, x, y):
-        self.frame.move_fourth_marker(x, y)
+    def __init__(self, frame, pen_color, pen_width, brush_prop):
+        super().__init__(frame, pen_color, pen_width, brush_prop)
 
     def draw_geometry(self, painter):
         pass

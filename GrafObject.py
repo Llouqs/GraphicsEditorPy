@@ -1,4 +1,3 @@
-import Properties
 from Selection import FramedObjSelection
 import copy
 import abc
@@ -52,19 +51,20 @@ class Figure(GrafObject):
     Класс фигура
     """
 
-    def __init__(self, frame, props: Properties):
+    def __init__(self, frame, pen_width, pen_color, brush_color):
         super().__init__(frame)
-        self.prop = props
-
-    def change_properties(self, props):
-        self.prop = props
+        self.pen_color = pen_color
+        self.pen_width = pen_width
+        self.brush_color = brush_color
 
     def draw(self, painter):
         """
         Метод отрисовки фигур
         :param painter: средство рисования
         """
-        self.prop.apply_props(painter)
+        painter.pen_color = self.pen_color
+        painter.pen_width = self.pen_width
+        painter.brush_color = self.brush_color
         self.draw_geometry(painter)
 
     def move(self, x, y):

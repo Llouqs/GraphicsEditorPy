@@ -13,10 +13,13 @@ from Selection import FramedObjSelection
 
 
 class BowknotFactory(Plugin, ObjectFactory):
-    name = "Bowknot"
+    name = "BowknotFactory"
 
     def OnLoad(self):
-        print("Bowknot подключен")
+        print(f"{self.name} подключен")
+
+    def OnUnLoad(self):
+        print(f"{self.name} отключен")
 
     def __init__(self, store=None):
         super().__init__(store)

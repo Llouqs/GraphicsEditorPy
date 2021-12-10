@@ -11,8 +11,8 @@ class EditorController:
     def change_state(self, new_state):
         self.active_state.change_state(new_state)
 
-    def set_object_type(self, object):
-        self.model.set_object_type(object)
+    def set_object_factory(self, object_factory):
+        self.model.set_object_factory(object_factory)
 
     def set_pen_color(self, pen_color):
         self.model.set_pen_color(pen_color)

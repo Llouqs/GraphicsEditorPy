@@ -6,6 +6,7 @@ from EditorController import EditorController
 from EditorModel import EditorModel
 import keyboard
 import plugin
+from ObjectFactory import LineFactory, EllipseFactory, RectangleFactory
 
 
 class GraphicsScene(QGraphicsScene):
@@ -88,8 +89,16 @@ class View(QMainWindow):
         self.y1 = -250
         self.x2 = 500
         self.y2 = 500
+
         # Инициализация контроллера
         self.controller = EditorController(EditorModel(), self.x1, self.y1, self.x2, self.y2, self.scene)
+
+        # Словарь фабрик
+        self.factory_dict = dict()
+        self.factory_dict["LineFactory"] = LineFactory(self.controller.model.store)
+        self.factory_dict["EllipseFactory"] = EllipseFactory(self.controller.model.store)
+        self.factory_dict["RectangleFactory"] = RectangleFactory(self.controller.model.store)
+        self.plugin_is_load = False
 
         # Подключаем методы по нажатию на action
         self.scene.clicked.connect(self.point1)
@@ -201,31 +210,41 @@ class View(QMainWindow):
         """
         Смена состояния на line
         """
-        self.controller.set_object_type("line")
+        self.controller.set_object_factory(self.factory_dict["LineFactory"])
         self.controller.change_state("create")
 
     def click_rect(self):
         """
         Смена состояния на rect
         """
-        self.controller.set_object_type("rect")
+        self.controller.set_object_factory(self.factory_dict["RectangleFactory"])
         self.controller.change_state("create")
 
     def click_circle(self):
         """
         Смена состояния на circle
         """
-        self.controller.set_object_type("ellipse")
+        self.controller.set_object_factory(self.factory_dict["EllipseFactory"])
         self.controller.change_state("create")
 
     def click_plugin(self):
         """
         Смена состояния на circle
         """
-        plugin.LoadPlugins()
-        b = plugin.Plugins[0]
-        print(b)
-        self.controller.change_state("empty")
+        if self.plugin_is_load is False:
+            plugin.LoadPlugins()
+            for plug in plugin.Plugins:
+                print(plug)
+                self.factory_dict[plug.name] = plug
+                plug.store = self.controller.model.store
+            self.controller.change_state("empty")
+            self.plugin_is_load = True
+        else:
+            for plug in plugin.Plugins:
+                self.factory_dict.pop(plug.name)
+                plugin.DelPlugin(plug)
+            self.controller.change_state("empty")
+            self.plugin_is_load = False
 
     def click_bowknot(self):
         """
@@ -233,7 +252,9 @@ class View(QMainWindow):
         """
         if not plugin.Plugins:
             print("Плагины не добавлены")
-
+        else:
+            self.controller.set_object_factory(self.factory_dict["BowknotFactory"])
+            self.controller.change_state("create")
 
     def click_select(self):
         """

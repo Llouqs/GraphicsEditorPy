@@ -2,6 +2,7 @@ from PyQt5 import QtGui
 from PyQt5.QtGui import *
 from Frame import Frame
 from GrafObject import GrafObject, Group
+from ObjectFactory import ObjectFactory
 from Painter import Painter
 from Figures import Line, Rectangle, Ellipse
 from Painter import Painter
@@ -119,12 +120,12 @@ class EditorModel:
             self.curr_object.brush_color = brush_prop
             self.repaint()
 
-    def set_object_type(self, object):
+    def set_object_factory(self, object_factory):
         """
-        Установка типа объекта (метод делегат)
-        :param object: тип объекта
+        Установка фабрики
+        :param object_factory: фабрика
         """
-        self.object_factory.set_object_type(object)
+        self.object_factory = object_factory
 
     def clear(self):
         """
@@ -180,67 +181,6 @@ class EditorModel:
             for object in obj.gr_list:
                 self.store.list.append(object)
             self.store.list.remove(obj)
-
-
-class ObjectFactory:
-    """
-    Класс фабрики объектов
-    """
-
-    def __init__(self, store):
-        self.object_type = None
-        self.pen_width = 3
-        self.pen_color =QtGui.QColor("black")
-        self.brush_prop = QtGui.QColor("black")
-        self.store = store
-
-    def set_pen_width(self, pen_width):
-        """
-        Установка свойств ручки
-        :param pen_width: толщина ручки
-        """
-        self.pen_width = pen_width
-
-    def set_pen_color(self, pen_color):
-        """
-        Установка свойств ручки
-        :param pen_color: цвет ручки
-        """
-        self.pen_color = pen_color
-
-    def set_brush_prop(self, brush_prop):
-        """
-        Установка свойств ручки
-        :param brush_prop: заливка
-        """
-        self.brush_prop = brush_prop
-
-    def set_object_type(self, object):
-        """
-        Установка типа объекта
-        :param object: тип
-        """
-        self.object_type = object
-
-    def create_object(self, x, y):
-        """
-        Метод создания объекта
-        :param x: координата х
-        :param y: координата y
-        """
-        frame = Frame(x, y, x, y)
-
-        if self.object_type == "rect":
-            rect = Rectangle(frame, self.pen_width, self.pen_color, self.brush_prop)
-            self.store.add(rect)
-
-        elif self.object_type == "ellipse":
-            ellipse = Ellipse(frame, self.pen_width, self.pen_color, self.brush_prop)
-            self.store.add(ellipse)
-
-        elif self.object_type == "line":
-            line = Line(frame,  self.pen_width, self.pen_color,  self.brush_prop)
-            self.store.add(line)
 
 
 class Store:

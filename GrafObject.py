@@ -21,6 +21,7 @@ class GrafObject:
         self.relative_y1 = 0
         self.relative_y2 = 0
 
+
     def in_body(self, x1, y1):
         pass
 

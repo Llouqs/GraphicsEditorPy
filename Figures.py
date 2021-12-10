@@ -1,4 +1,5 @@
-from PyQt5.QtGui import QPainterPath, QPainter
+from PyQt5.QtCore import QPoint, Qt
+from PyQt5.QtGui import QPainterPath, QPainter, QPen, QPolygon, QPolygonF
 from PyQt5.uic.properties import QtCore
 
 import GrafObject
@@ -15,13 +16,13 @@ class Line(GrafObject.Figure):
     def __init__(self, frame, pen_color, pen_width, brush_prop):
         super().__init__(frame, pen_color, pen_width, brush_prop)
 
-
     def draw_geometry(self, painter):
         """
         Отрисовка линии
         :param painter: средство рисования
         """
-        painter.line(self.frame.x1, self.frame.y1, self.frame.x2, self.frame.y2)
+        pen = QPen(self.pen_color, self.pen_width)
+        painter.painter.addLine(self.frame.x1, self.frame.y1, self.frame.x2, self.frame.y2, pen)
 
     def in_body(self, x, y):
         """
@@ -36,11 +37,10 @@ class Line(GrafObject.Figure):
 
         distance = abs((ymax - ymin) * x - (xmax - xmin) * y + xmax * ymin - ymax * xmin) / (
             math.sqrt(pow(ymax - ymin, 2) + pow(xmax - xmin, 2)))
+        print(f"{xmax} {self.frame.x1} {self.frame.x2} {x}")
+        print(f"{ymax} {self.frame.y1} {self.frame.y2} {y} {distance}")
 
-        if xmin - 5 <= x <= xmax + 5 and ymin - 5 <= y <= ymax + 5 and distance < 5:
-            return True
-        else:
-            return False
+        return xmin - 5 <= x <= xmax + 5 and ymin - 5 <= y <= ymax + 5 and distance < 5
 
     def create_selection(self):
         """
@@ -62,7 +62,15 @@ class Rectangle(GrafObject.Figure):
         Отрисовка прямоугольника
         :param painter: средство рисования
         """
-        painter.rect(self.frame.x1, self.frame.y1, self.frame.x2, self.frame.y2)
+
+        xmax = max(self.frame.x1, self.frame.x2)
+        xmin = min(self.frame.x1, self.frame.x2)
+        ymax = max(self.frame.y1, self.frame.y2)
+        ymin = min(self.frame.y1, self.frame.y2)
+        w = xmax - xmin
+        h = ymax - ymin
+        pen = QPen(self.pen_color, self.pen_width)
+        painter.painter.addRect(xmin, ymin, w, h, pen, self.brush_color)
 
     def create_selection(self):
         """
@@ -82,11 +90,7 @@ class Rectangle(GrafObject.Figure):
         ymin = min(self.frame.y1, self.frame.y2)
         w = xmax - xmin
         h = ymax - ymin
-
-        if x > xmin and x < xmin + w and y > ymin and y < ymin + h:
-            return True
-        else:
-            return False
+        return xmin < x < xmin + w and ymin < y < ymin + h
 
 
 class Ellipse(GrafObject.Figure):
@@ -102,7 +106,15 @@ class Ellipse(GrafObject.Figure):
         Отрисовка эллипса
         :param painter: средство рисования
         """
-        painter.ellipse(self.frame.x1, self.frame.y1, self.frame.x2, self.frame.y2)
+        xmax = max(self.frame.x1, self.frame.x2)
+        xmin = min(self.frame.x1, self.frame.x2)
+        ymax = max(self.frame.y1, self.frame.y2)
+        ymin = min(self.frame.y1, self.frame.y2)
+        w = xmax - xmin
+        h = ymax - ymin
+
+        pen = QPen(self.pen_color, self.pen_width)
+        painter.painter.addEllipse(xmin, ymin, w, h, pen, self.brush_color)
 
     def create_selection(self):
         """
@@ -119,8 +131,5 @@ class Ellipse(GrafObject.Figure):
         x_c = (self.frame.x1 + self.frame.x2) / 2
         y_c = (self.frame.y1 + self.frame.y2) / 2
 
-        if pow(x - x_c, 2) / pow((self.frame.x2 - self.frame.x1) / 2, 2) + pow(y - y_c, 2) / pow(
-                (self.frame.y2 - self.frame.y1) / 2, 2) <= 1:
-            return True
-        else:
-            return False
+        return pow(x - x_c, 2) / pow((self.frame.x2 - self.frame.x1) / 2, 2) + pow(y - y_c, 2) / pow(
+            (self.frame.y2 - self.frame.y1) / 2, 2) <= 1

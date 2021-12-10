@@ -13,44 +13,13 @@ class Painter:
         self.pen_width = 1
         self.brush_color = QtGui.QColor("green")
 
+
     def set_port(self, x0, y0, w, h, painter):
         self.painter = painter
         self.x0 = x0
         self.y0 = y0
         self.w = w
         self.h = h
-
-    def line(self, x1, y1, x2, y2):
-        pen = QPen(self.pen_color, self.pen_width)
-        self.painter.addLine(x1, y1, x2, y2, pen)
-
-    def rect(self, x1, y1, x2, y2):
-        """
-        Определение координат прямоугольника
-        """
-        xmax = max(x1, x2)
-        xmin = min(x1, x2)
-        ymax = max(y1, y2)
-        ymin = min(y1, y2)
-        w = xmax - xmin
-        h = ymax - ymin
-
-        pen = QPen(self.pen_color, self.pen_width)
-        self.painter.addRect(xmin, ymin, w, h, pen, self.brush_color)
-
-    def ellipse(self, x1, y1, x2, y2):
-        """
-        Определение координат эллипса
-        """
-        xmax = max(x1, x2)
-        xmin = min(x1, x2)
-        ymax = max(y1, y2)
-        ymin = min(y1, y2)
-        w = xmax - xmin
-        h = ymax - ymin
-
-        pen = QPen(self.pen_color, self.pen_width)
-        self.painter.addEllipse(xmin, ymin, w, h, pen, self.brush_color)
 
     def frame_selection(self, x1, y1, x2, y2, x3, y3, x4, y4):
         # маркеры

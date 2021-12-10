@@ -37,8 +37,6 @@ class Line(GrafObject.Figure):
 
         distance = abs((ymax - ymin) * x - (xmax - xmin) * y + xmax * ymin - ymax * xmin) / (
             math.sqrt(pow(ymax - ymin, 2) + pow(xmax - xmin, 2)))
-        print(f"{xmax} {self.frame.x1} {self.frame.x2} {x}")
-        print(f"{ymax} {self.frame.y1} {self.frame.y2} {y} {distance}")
 
         return xmin - 5 <= x <= xmax + 5 and ymin - 5 <= y <= ymax + 5 and distance < 5
 

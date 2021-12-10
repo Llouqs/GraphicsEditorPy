@@ -1,3 +1,7 @@
+from PyQt5.uic.properties import QtGui
+
+from EditorModel import ObjectFactory
+from Frame import Frame
 from plugin import Plugin
 import typing as t
 
@@ -6,37 +10,29 @@ from PyQt5.QtGui import QPen, QPolygonF
 
 from GrafObject import Figure
 from Selection import FramedObjSelection
-from EditorModel import ObjectFactory
 
 
-def setup() -> t.List:
-    return [OurFactory()]
+class BowknotFactory(Plugin, ObjectFactory):
+    name = "Bowknot"
 
+    def OnLoad(self):
+        print("Bowknot подключен")
 
-class OurFactory:
-    @property
-    def figure_id(self) -> str:
-        return "SampleFigure"
+    def __init__(self, store=None):
+        super().__init__(store)
+        if store is None:
+            store = []
+        self.object_type = "bowknot"
 
-    @property
-    def name(self) -> str:
-        return self.figure_id
-
-    @property
-    def icon(self) -> str:
-        return ""
-
-    def start_figure(self, x: int, y: int) -> Figure:
-        raise NotImplementedError
-
-    def update_figure(self, f: Figure, x: int, y: int):
-        raise NotImplementedError
-
-    def complete_figure(self, f: Figure, x: int, y: int):
-        raise NotImplementedError
-
-    def cancel_figure(self, f: Figure):
-        raise NotImplementedError
+    def create_object(self, x, y):
+        """
+        Метод создания объекта
+        :param x: координата х
+        :param y: координата y
+        """
+        frame = Frame(x, y, x, y)
+        bowknot = Bowknot(frame, self.pen_width, self.pen_color, self.brush_prop)
+        self.store.add(bowknot)
 
 
 class Bowknot(Figure):

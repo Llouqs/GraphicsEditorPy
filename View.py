@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import *
 from EditorController import EditorController
 from EditorModel import EditorModel
 import keyboard
+import plugin
 
 
 class GraphicsScene(QGraphicsScene):
@@ -57,7 +58,7 @@ class View(QMainWindow):
 
         self.state = ""
         # Определение размеров и title окна GraphObject
-        self.resize(520, 550)
+        self.resize(820, 650)
         self.setWindowTitle('GraphicsEditor')
         # Виджет для отображение GraphicsScene()
         self.grview = QGraphicsView()
@@ -96,6 +97,8 @@ class View(QMainWindow):
         self.scene.move.connect(self.point3)
 
         # Подключаем методы по нажатию на action в toolbar
+        self.bowknot_action.triggered.connect(self.click_bowknot)
+        self.plugin_action.triggered.connect(self.click_plugin)
         self.trash_action.triggered.connect(self.clear)
         self.line_action.triggered.connect(self.click_line)
         self.rect_action.triggered.connect(self.click_rect)
@@ -126,6 +129,14 @@ class View(QMainWindow):
         self.circle_action = QAction(QIcon("images/circle.ico"), 'circle', self)
         self.circle_action.setStatusTip("circle")
         self.figure_toolbar.addAction(self.circle_action)
+        # кнопка для плагинов
+        self.bowknot_action = QAction(QIcon("images/Bowknot.png"), 'bowknot', self)
+        self.bowknot_action.setStatusTip("bowknot")
+        self.figure_toolbar.addAction(self.bowknot_action)
+        # кнопка для плагинов
+        self.plugin_action = QAction(QIcon("images/Plugins.png"), 'plugin', self)
+        self.plugin_action.setStatusTip("plugin")
+        self.figure_toolbar.addAction(self.plugin_action)
         # кнопка select
         self.select_action = QAction(QIcon("images/select.ico"), 'select', self)
         self.select_action.setStatusTip("select")
@@ -206,6 +217,23 @@ class View(QMainWindow):
         """
         self.controller.set_object_type("ellipse")
         self.controller.change_state("create")
+
+    def click_plugin(self):
+        """
+        Смена состояния на circle
+        """
+        plugin.LoadPlugins()
+        b = plugin.Plugins[0]
+        print(b)
+        self.controller.change_state("empty")
+
+    def click_bowknot(self):
+        """
+        Смена состояния на circle
+        """
+        if not plugin.Plugins:
+            print("Плагины не добавлены")
+
 
     def click_select(self):
         """

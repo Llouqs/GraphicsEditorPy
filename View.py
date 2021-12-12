@@ -260,7 +260,7 @@ class View(QMainWindow):
         """
         Смена состояния на select
         """
-        self.controller.set_object_type("select")
+        # self.controller.set_object_type("select")
         self.controller.change_state("empty")
 
     def point1(self, p):

@@ -1,8 +1,8 @@
-
 class EditorController:
     """
     Класс контроллер
     """
+
     def __init__(self, model, x, y, w, h, painter):
         self.model = model
         self.model.set_port(x, y, w, h, painter)
@@ -50,10 +50,12 @@ class EditorController:
     def clear(self):
         self.model.clear()
 
+
 class ActiveStateContainer:
     """
     Контроль состояний
     """
+
     def __init__(self, model):
         self.model = model
         self.current_state = None
@@ -100,6 +102,7 @@ class State:
     """
     Класс состояния
     """
+
     def __init__(self, model, active_state):
         self.model = model
         self.active_state = active_state
@@ -124,10 +127,12 @@ class State:
     def ungroup_state(self):
         self.group_state = True
 
+
 class ObjectCreateState(State):
     """
     Класс состояния создания
     """
+
     def __init__(self, model, active_state):
         super().__init__(model, active_state)
         self.model.clear_selection()
@@ -143,10 +148,12 @@ class ObjectCreateState(State):
     def mouse_move(self, x, y):
         pass
 
+
 class EmptyState(State):
     """
     Класс пустого состояния
     """
+
     def __init__(self, model, active_state):
         super().__init__(model, active_state)
         self.model.clear_selection()
@@ -163,13 +170,14 @@ class EmptyState(State):
     def mouse_move(self, x, y):
         pass
 
+
 class DragState(State):
     """
     Класс состояния протяжки
     """
+
     def __init__(self, model, active_state):
         super().__init__(model, active_state)
-
 
     def mouse_realised(self, x, y):
         self.active_state.change_state("single")
@@ -183,9 +191,9 @@ class SingleSelState(State):
     """
     Класс состояния при одном выделении
     """
+
     def __init__(self, model, active_state):
         super().__init__(model, active_state)
-
 
     def mouse_clicked(self, x, y):
         if self.model.try_grab(x, y):
@@ -204,6 +212,7 @@ class SingleSelState(State):
 
     def mouse_realised(self, x, y):
         pass
+
     def mouse_move(self, x, y):
         pass
 
@@ -212,6 +221,7 @@ class MultiSelState(State):
     """
    Класс состояния при множественном выделении
     """
+
     def __init__(self, model, active_state):
         super().__init__(model, active_state)
 
@@ -219,7 +229,3 @@ class MultiSelState(State):
         if self.ctrl_state:
             self.model.try_select(x, y)
             self.model.try_grab(x, y)
-
-
-
-

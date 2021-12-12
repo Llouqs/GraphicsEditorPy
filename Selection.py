@@ -13,9 +13,6 @@ class Selection:
     def try_grab_marker(self, x, y):
         pass
 
-    def try_release(self):
-        pass
-
     def try_drag_to(self, x, y):
         pass
 

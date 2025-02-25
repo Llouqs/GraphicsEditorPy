@@ -12,7 +12,6 @@ class Line(GrafObject.Figure):
     """
     Класс фигуры - Линия
     """
-
     def __init__(self, frame, pen_color, pen_width, brush_prop):
         super().__init__(frame, pen_color, pen_width, brush_prop)
 
@@ -60,7 +59,6 @@ class Rectangle(GrafObject.Figure):
         Отрисовка прямоугольника
         :param painter: средство рисования
         """
-
         xmax = max(self.frame.x1, self.frame.x2)
         xmin = min(self.frame.x1, self.frame.x2)
         ymax = max(self.frame.y1, self.frame.y2)
@@ -75,21 +73,6 @@ class Rectangle(GrafObject.Figure):
         Создание селектора прямоугольника
         """
         return FramedObjSelection(self)
-
-    def in_body(self, x, y):
-        """
-        Определение попадания точки в прямоугольник
-        :param x: координата x
-        :param y: координата y
-        """
-        xmax = max(self.frame.x1, self.frame.x2)
-        xmin = min(self.frame.x1, self.frame.x2)
-        ymax = max(self.frame.y1, self.frame.y2)
-        ymin = min(self.frame.y1, self.frame.y2)
-        w = xmax - xmin
-        h = ymax - ymin
-        return xmin < x < xmin + w and ymin < y < ymin + h
-
 
 class Ellipse(GrafObject.Figure):
     """

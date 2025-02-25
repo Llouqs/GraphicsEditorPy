@@ -12,9 +12,9 @@ from GrafObject import Figure
 from Selection import FramedObjSelection
 
 
-class BowknotFactory(Plugin, ObjectFactory):
-    name = "BowknotFactory"
-    icon_path = "plugins/images/Bowknot.png"
+class RightTriangleFactory(Plugin, ObjectFactory):
+    name = "RightTriangleFactory"
+    icon_path = "plugins/images/RightTriangle.png"
 
     def OnLoad(self):
         print(f"{self.name} подключен")
@@ -26,7 +26,7 @@ class BowknotFactory(Plugin, ObjectFactory):
         super().__init__(store)
         if store is None:
             store = []
-        self.object_type = "bowknot"
+        self.object_type = "right_triangle"
 
     def create_object(self, x, y):
         """
@@ -35,11 +35,11 @@ class BowknotFactory(Plugin, ObjectFactory):
         :param y: координата y
         """
         frame = Frame(x, y, x, y)
-        bowknot = Bowknot(frame, self.pen_width, self.pen_color, self.brush_prop)
-        self.store.add(bowknot)
+        rightTriangle = RightTriangle(frame, self.pen_width, self.pen_color, self.brush_prop)
+        self.store.add(rightTriangle)
 
 
-class Bowknot(Figure):
+class RightTriangle(Figure):
 
     def __init__(self, frame, pen_color, pen_width, brush_prop):
         super().__init__(frame, pen_color, pen_width, brush_prop)
@@ -59,8 +59,7 @@ class Bowknot(Figure):
         points = QPolygonF([
             QPoint(int(xmin), int(ymin)),
             QPoint(int(xmin), int(ymax)),
-            QPoint(int(xmax), int(ymin)),
-            QPoint(int(xmax), int(ymax))
+            QPoint(int(xmax), int(ymin))
         ])
 
         painter.painter.addPolygon(points, pen, self.brush_color)

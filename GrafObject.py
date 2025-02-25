@@ -58,6 +58,20 @@ class Figure(GrafObject):
         self.pen_width = pen_width
         self.brush_color = brush_color
 
+    def in_body(self, x, y):
+        """
+        Для всех фигур по умолчанию коллайдер прямоугольный
+        :param x: координата x
+        :param y: координата y
+        """
+        xmax = max(self.frame.x1, self.frame.x2)
+        xmin = min(self.frame.x1, self.frame.x2)
+        ymax = max(self.frame.y1, self.frame.y2)
+        ymin = min(self.frame.y1, self.frame.y2)
+        w = xmax - xmin
+        h = ymax - ymin
+        return xmin < x < xmin + w and ymin < y < ymin + h
+    
     def draw(self, painter):
         """
         Метод отрисовки фигур

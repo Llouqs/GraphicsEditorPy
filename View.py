@@ -1,10 +1,9 @@
 from PyQt5.QtCore import *
-from PyQt5 import QtGui, QtCore
+from PyQt5 import QtCore
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from EditorController import EditorController
 from EditorModel import EditorModel
-import keyboard
 import plugin
 from ObjectFactory import LineFactory, EllipseFactory, RectangleFactory
 
@@ -13,7 +12,7 @@ class GraphicsScene(QGraphicsScene):
     clicked = pyqtSignal(QPointF)
     released = pyqtSignal(QPointF)
     move = pyqtSignal(QPointF)
-    keypresssignal = pyqtSignal(bool)
+    keyPressed = pyqtSignal(bool)
 
     def mousePressEvent(self, event):
         """
@@ -39,14 +38,14 @@ class GraphicsScene(QGraphicsScene):
         self.move.emit(sp)
         super().mouseMoveEvent(event)
 
-    def KeyPressEvent(self, event):
+    def keyPressEvent(self, event):
         """
         Событие нажатия клавиши
         """
         ctrl = False
-        if event.modifiers() and Qt.ControlModifier:
+        if event.modifiers() & Qt.ControlModifier:
             ctrl = True
-        self.keypresssignal.emit(ctrl)
+        self.keyPressed.emit(ctrl)
 
 
 class View(QMainWindow):
@@ -61,7 +60,7 @@ class View(QMainWindow):
         # Определение размеров и title окна GraphObject
         self.resize(820, 650)
         self.setWindowTitle('GraphicsEditor')
-        # Виджет для отображение GraphicsScene()
+        # Виджет для отображения GraphicsScene()
         self.grview = QGraphicsView()
         self.grview.scale(1, -1)
         # Фрейм на котором происходит отрисовка
@@ -98,7 +97,10 @@ class View(QMainWindow):
         self.factory_dict["LineFactory"] = LineFactory(self.controller.model.store)
         self.factory_dict["EllipseFactory"] = EllipseFactory(self.controller.model.store)
         self.factory_dict["RectangleFactory"] = RectangleFactory(self.controller.model.store)
+
+        # Добавляем атрибуты для плагинов
         self.plugin_is_load = False
+        self.plugin_buttons = []
 
         # Подключаем методы по нажатию на action
         self.scene.clicked.connect(self.point1)
@@ -106,7 +108,6 @@ class View(QMainWindow):
         self.scene.move.connect(self.point3)
 
         # Подключаем методы по нажатию на action в toolbar
-        self.bowknot_action.triggered.connect(self.click_bowknot)
         self.plugin_action.triggered.connect(self.click_plugin)
         self.trash_action.triggered.connect(self.clear)
         self.line_action.triggered.connect(self.click_line)
@@ -138,10 +139,6 @@ class View(QMainWindow):
         self.circle_action = QAction(QIcon("images/circle.ico"), 'circle', self)
         self.circle_action.setStatusTip("circle")
         self.figure_toolbar.addAction(self.circle_action)
-        # кнопка для плагинов
-        self.bowknot_action = QAction(QIcon("images/Bowknot.png"), 'bowknot', self)
-        self.bowknot_action.setStatusTip("bowknot")
-        self.figure_toolbar.addAction(self.bowknot_action)
         # кнопка для плагинов
         self.plugin_action = QAction(QIcon("images/Plugins.png"), 'plugin', self)
         self.plugin_action.setStatusTip("plugin")
@@ -228,39 +225,76 @@ class View(QMainWindow):
         self.controller.change_state("create")
 
     def click_plugin(self):
-        """
-        Смена состояния на circle
-        """
-        if self.plugin_is_load is False:
-            plugin.LoadPlugins()
-            for plug in plugin.Plugins:
-                print(plug)
-                self.factory_dict[plug.name] = plug
-                plug.store = self.controller.model.store
-            self.controller.change_state("empty")
-            self.plugin_is_load = True
+        if self.plugin_is_load:
+            print("Плагины уже загружены, выгружаем...")
+            self.unload_plugins()
         else:
-            for plug in plugin.Plugins:
-                self.factory_dict.pop(plug.name)
-                plugin.DelPlugin(plug)
-            self.controller.change_state("empty")
-            self.plugin_is_load = False
+            print("Плагины еще не загружены, загружаем...")
+            self.load_plugins()
 
-    def click_bowknot(self):
-        """
-        Смена состояния на circle
-        """
-        if not plugin.Plugins:
-            print("Плагины не добавлены")
-        else:
-            self.controller.set_object_factory(self.factory_dict["BowknotFactory"])
-            self.controller.change_state("create")
+    def load_plugins(self):
+        plugin.LoadPlugins()
+
+        for plug in plugin.Plugins:
+            if plug.name in self.factory_dict:
+                continue  # Плагин уже загружен
+
+            self.factory_dict[plug.name] = plug
+            plug.store = self.controller.model.store
+
+            action = QAction(QIcon(plug.icon_path), plug.name, self)
+            action.setStatusTip(f"Create {plug.name}")
+
+            method_name = f"click_{plug.name.lower()}"
+            setattr(self, method_name, lambda checked=False, p=plug: self.click_dynamic_plugin(p))
+            action.triggered.connect(getattr(self, method_name))
+
+            plugin_button = QToolButton(self)
+            plugin_button.setDefaultAction(action)
+            plugin_button.setIcon(QIcon(plug.icon_path))
+            plugin_button.setToolButtonStyle(Qt.ToolButtonIconOnly)
+
+            # Добавляем кнопку в тулбар и в список
+            self.figure_toolbar.insertWidget(self.plugin_action, plugin_button)
+            self.plugin_buttons.append((plugin_button, action))  # Сохраняем кнопку и действие
+
+        self.controller.change_state("empty")
+        self.plugin_is_load = True  # Плагины загружены
+
+    def unload_plugins(self):
+        print("Начинаем выгрузку плагинов...")
+
+        # Удаляем кнопки плагинов из тулбара и отключаем действия
+        for button, action in self.plugin_buttons:
+            self.figure_toolbar.removeAction(action)  # Удаляем действие из тулбара
+            button.deleteLater()  # Удаляем саму кнопку (освобождаем ресурсы)
+
+        # Очищаем список кнопок
+        self.plugin_buttons.clear()
+
+        # Очищаем список фабрик
+        for plug in plugin.Plugins:
+            if plug.name in self.factory_dict:
+                self.factory_dict.pop(plug.name)
+
+        print("Выгружаем плагины...")
+        plugin.ClearPlugins()
+        self.controller.change_state("empty")
+        self.plugin_is_load = False  # Плагины выгружены
+
+    def click_dynamic_plugin(self, plug):
+        print(f"Клик по плагину: {plug.name}")
+        if plug.name not in self.factory_dict:
+            print(f"Плагин {plug.name} не найден!")
+            return
+
+        self.controller.set_object_factory(self.factory_dict[plug.name])
+        self.controller.change_state("create")
 
     def click_select(self):
         """
         Смена состояния на select
         """
-        # self.controller.set_object_type("select")
         self.controller.change_state("empty")
 
     def point1(self, p):
@@ -282,7 +316,6 @@ class View(QMainWindow):
         self.controller.mouse_realised(self.x2, self.y2)
 
     def point3(self, p):
-
         self.x3 = p.x()
         self.y3 = p.y()
         self.controller.mouse_move(self.x3, self.y3)
